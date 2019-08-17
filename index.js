@@ -17,12 +17,8 @@ function main() {
     ctx = canvas.getContext("2d");
 
     document.body.appendChild(canvas);
-    document.addEventListener('keydown', function (e) {
-        keys[e.keyCode] = (e.type == "keydown");
-    })
-    document.addEventListener('keyup', function (e) {
-        keys[e.keyCode] = (e.type == "keydown");
-    })    
+    document.addEventListener('keydown', e => keys[e.keyCode] = true)
+    document.addEventListener('keyup', e => keys[e.keyCode] = false)
     draw();
 }
 
@@ -33,10 +29,10 @@ function isAllowed(x, y) {
 function draw() {
     let dx = 0;
     let dy = 0;
-    if (keys && keys[37]) { dx = -delta; }
-    if (keys && keys[39]) { dx = +delta; }
-    if (keys && keys[38]) { dy = -delta; }
-    if (keys && keys[40]) { dy = +delta; }
+    if (keys[37]) { dx = -delta; }
+    if (keys[39]) { dx = +delta; }
+    if (keys[38]) { dy = -delta; }
+    if (keys[40]) { dy = +delta; }
     if (isAllowed(x + dx, y + dy)) {
         x += dx;
         y += dy;
