@@ -12,6 +12,7 @@ const textColor = "#0095DD";
 const textX = 8;
 const textY = 20;
 const keys = {};
+const audio = new Audio('coin.wav');
 
 let canvas, ctx;
 let coins = [];
@@ -55,7 +56,10 @@ function isCollision(coin) {
 function maybeEatCoins() {
     const numCoinsBefore = coins.length;
     coins = coins.filter(coin => !isCollision(coin));
-    eaten += numCoinsBefore - coins.length;
+    if (numCoinsBefore > coins.length) {
+        audio.play();
+        eaten += numCoinsBefore - coins.length;
+    }
 }
 
 function drawCoins() {
