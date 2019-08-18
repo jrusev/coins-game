@@ -1,5 +1,7 @@
 window.addEventListener("load", main, false);
 
+const canvasWidth = 640;
+const canvasHeight = 360;
 const width = 20;
 const height = 20;
 const coinWidth = 20;
@@ -9,21 +11,22 @@ const delta = 5;
 const coinColor = "orange";
 const coinMakeChance = 0.01;
 const coinDeleteChance = 0.001;
-const textFont = "18px Arial";
+const smallFontSize = 18;
+const largeFontSize = 42;
+const textFont = "Arial";
 const textColor = "#0095DD";
-const textX = 8;
-const textY = 20;
+const textX = smallFontSize;
+const textY = smallFontSize;
 const keys = {};
+const gameDurationSec = 30;
 const coinSound = new Audio('coin.wav');
 const gameOverSound = new Audio('game-over.wav');
-const canvasWidth = 640;
-const canvasHeight = 360;
 
 let canvas, ctx;
 let coins = [];
 let x, y;
 let eaten = 0;
-let secondsRemaining = 30;
+let timeLeft;
 let finished = false;
 
 function main() {
@@ -34,6 +37,7 @@ function main() {
 
     x = canvasWidth / 2;
     y = canvasHeight / 2;
+    timeLeft = gameDurationSec;
 
     document.body.appendChild(canvas);
     document.addEventListener('keydown', e => keys[e.keyCode] = true)
@@ -45,8 +49,8 @@ function main() {
 }
 
 function timer() {
-    secondsRemaining -= 1;
-    if (!secondsRemaining) {
+    timeLeft -= 1;
+    if (!timeLeft) {
        clearInterval(timer);
        finished = true;
     }
@@ -102,15 +106,15 @@ function drawPlayer() {
 }
 
 function drawText() {
-    ctx.font = textFont;
+    ctx.font = `${smallFontSize}px ${textFont}`;
     ctx.fillStyle = textColor;
     ctx.fillText(`Coins: $${10*eaten}`, textX, textY);
-    ctx.fillText(`Time: ${secondsRemaining}`, canvasWidth - 100, textY);
+    ctx.fillText(`Time: ${timeLeft}`, canvasWidth - 5*smallFontSize, textY);
 }
 
 function gameOver() {
-    ctx.font = "28px Arial";
-    ctx.fillText("Game over!", canvasWidth / 2 - 80, canvasHeight / 2);
+    ctx.font = `${largeFontSize}px ${textFont}`;
+    ctx.fillText("GAME OVER!", canvasWidth / 2 - 2.7*largeFontSize, canvasHeight / 2);
     gameOverSound.play();
 }
 
