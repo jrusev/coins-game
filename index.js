@@ -2,6 +2,8 @@ window.addEventListener("load", main, false);
 
 const width = 20;
 const height = 20;
+const coinWidth = 20;
+const coinHeight = 20;
 const color = "blue";
 const delta = 5;
 const coinColor = "orange";
@@ -12,7 +14,10 @@ const textColor = "#0095DD";
 const textX = 8;
 const textY = 20;
 const keys = {};
-const audio = new Audio('coin.wav');
+const coinSound = new Audio('coin.wav');
+const gameOverSound = new Audio('game-over.wav');
+const canvasWidth = 640;
+const canvasHeight = 360;
 
 let canvas, ctx;
 let coins = [];
@@ -23,11 +28,12 @@ let finished = false;
 
 function main() {
     canvas = document.createElement("canvas");
-    canvas.width = 640;
-    canvas.height = 360;
-    x = canvas.width / 2;
-    y = canvas.height / 2;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     ctx = canvas.getContext("2d");
+
+    x = canvasWidth / 2;
+    y = canvasHeight / 2;
 
     document.body.appendChild(canvas);
     document.addEventListener('keydown', e => keys[e.keyCode] = true)
@@ -47,15 +53,15 @@ function timer() {
 }
 
 function isAllowed(x, y) {
-    return x >= 0 && x <= canvas.width - width && y >= 0 && y <= canvas.height - height;
+    return x >= 0 && x <= canvasWidth - width && y >= 0 && y <= canvasHeight - height;
 }
 
 function maybeMakeCoin() {
     if (Math.random() > coinMakeChance) {
         return;
     }
-    const x = Math.random() * (canvas.width - width);
-    const y = Math.random() * (canvas.height - height);
+    const x = Math.random() * (canvasWidth - width);
+    const y = Math.random() * (canvasHeight - height);
     coins.push({x, y});
 }
 
@@ -64,21 +70,25 @@ function maybeRemoveCoins() {
 }
 
 function isCollision(coin) {
-    return x + width >= coin.x && x <= coin.x + width && y + width >= coin.y && y <= coin.y + height;
+    return (
+        x + width >= coin.x
+        && x <= coin.x + coinWidth
+        && y + height >= coin.y
+        && y <= coin.y + coinHeight);
 }
 
 function maybeEatCoins() {
     const numCoinsBefore = coins.length;
     coins = coins.filter(coin => !isCollision(coin));
     if (numCoinsBefore > coins.length) {
-        audio.play();
+        coinSound.play();
         eaten += numCoinsBefore - coins.length;
     }
 }
 
 function drawCoins() {
     ctx.fillStyle = coinColor;
-    const r = width / 2;
+    const r = coinWidth / 2;
     for (let coin of coins) {
         ctx.beginPath();
         ctx.arc(coin.x + r, coin.y + r, r, 0, 2 * Math.PI, false);
@@ -95,13 +105,14 @@ function drawText() {
     ctx.font = textFont;
     ctx.fillStyle = textColor;
     ctx.fillText(`Coins: $${10*eaten}`, textX, textY);
+    ctx.fillText(`Time: ${timeLeft}`, canvasWidth - 100, textY);
+}
 
-    ctx.fillText(`Time: ${timeLeft}`, canvas.width - 100, textY);
-    if (finished) {
-        ctx.font = "28px Arial";
-        ctx.fillText("Game over!", canvas.width / 2 - 80, canvas.height / 2);
-    }
-  }
+function gameOver() {
+    ctx.font = "28px Arial";
+    ctx.fillText("Game over!", canvasWidth / 2 - 80, canvasHeight / 2);
+    gameOverSound.play();
+}
 
 function updateState() {
     maybeMakeCoin();
@@ -122,11 +133,13 @@ function updateState() {
 
 function draw() {
     updateState();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     drawPlayer();
     drawCoins();
     drawText();
-    if (!finished) {
+    if (finished) {
+        gameOver();
+    } else {
         requestAnimationFrame(draw);
     }
 }
