@@ -23,7 +23,7 @@ let canvas, ctx;
 let coins = [];
 let x, y;
 let eaten = 0;
-let timeLeft = 30;
+let secondsRemaining = 30;
 let finished = false;
 
 function main() {
@@ -45,8 +45,8 @@ function main() {
 }
 
 function timer() {
-    timeLeft -= 1;
-    if (!timeLeft) {
+    secondsRemaining -= 1;
+    if (!secondsRemaining) {
        clearInterval(timer);
        finished = true;
     }
@@ -105,7 +105,7 @@ function drawText() {
     ctx.font = textFont;
     ctx.fillStyle = textColor;
     ctx.fillText(`Coins: $${10*eaten}`, textX, textY);
-    ctx.fillText(`Time: ${timeLeft}`, canvasWidth - 100, textY);
+    ctx.fillText(`Time: ${secondsRemaining}`, canvasWidth - 100, textY);
 }
 
 function gameOver() {
