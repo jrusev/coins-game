@@ -19,6 +19,8 @@ let coins = [];
 let x = 10;
 let y = 120;
 let eaten = 0;
+let timeLeft = 30;
+let finished = false;
 
 function main() {
     canvas = document.createElement("canvas");
@@ -29,7 +31,18 @@ function main() {
     document.body.appendChild(canvas);
     document.addEventListener('keydown', e => keys[e.keyCode] = true)
     document.addEventListener('keyup', e => keys[e.keyCode] = false)
+
+    setInterval(timer, 1000);
+
     draw();
+}
+
+function timer() {
+    timeLeft -= 1;
+    if (!timeLeft) {
+       clearInterval(timer);
+       finished = true;
+    }
 }
 
 function isAllowed(x, y) {
@@ -77,10 +90,16 @@ function drawPlayer() {
     ctx.fillRect(x, y, width, height);
 }
 
-function drawScore() {
+function drawText() {
     ctx.font = textFont;
     ctx.fillStyle = textColor;
     ctx.fillText(`Coins: $${10*eaten}`, textX, textY);
+
+    ctx.fillText(`Time: ${timeLeft}`, canvas.width - 100, textY);
+    if (finished) {
+        ctx.font = "28px Arial";
+        ctx.fillText("Game over!", canvas.width / 2 - 80, canvas.height / 2);
+    }
   }
 
 function updateState() {
@@ -105,6 +124,8 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawCoins();
-    drawScore();
-    requestAnimationFrame(draw);
+    drawText();
+    if (!finished) {
+        requestAnimationFrame(draw);
+    }
 }
