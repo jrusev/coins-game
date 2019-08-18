@@ -26,7 +26,12 @@ function isAllowed(x, y) {
     return x >= 0 && x <= canvas.width - width && y >= 0 && y <= canvas.height - height;
 }
 
-function draw() {
+function drawPlayer() {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, height);
+}
+
+function updateState() {
     let dx = 0;
     let dy = 0;
     if (keys[37]) { dx = -delta; }
@@ -36,9 +41,12 @@ function draw() {
     if (isAllowed(x + dx, y + dy)) {
         x += dx;
         y += dy;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, width, height);
     }
+}
+
+function draw() {
+    updateState();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawPlayer();
     requestAnimationFrame(draw);
 }
