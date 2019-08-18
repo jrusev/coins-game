@@ -16,8 +16,7 @@ const audio = new Audio('coin.wav');
 
 let canvas, ctx;
 let coins = [];
-let x = 10;
-let y = 120;
+let x, y;
 let eaten = 0;
 let timeLeft = 30;
 let finished = false;
@@ -26,6 +25,8 @@ function main() {
     canvas = document.createElement("canvas");
     canvas.width = 640;
     canvas.height = 360;
+    x = canvas.width / 2;
+    y = canvas.height / 2;
     ctx = canvas.getContext("2d");
 
     document.body.appendChild(canvas);
