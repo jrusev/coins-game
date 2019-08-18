@@ -7,12 +7,17 @@ const delta = 5;
 const coinColor = "orange";
 const coinMakeChance = 0.01;
 const coinDeleteChance = 0.001;
+const textFont = "18px Arial";
+const textColor = "#0095DD";
+const textX = 8;
+const textY = 20;
 const keys = {};
 
 let canvas, ctx;
 let coins = [];
 let x = 10;
 let y = 120;
+let eaten = 0;
 
 function main() {
     canvas = document.createElement("canvas");
@@ -48,7 +53,9 @@ function isCollision(coin) {
 }
 
 function maybeEatCoins() {
+    const numCoinsBefore = coins.length;
     coins = coins.filter(coin => !isCollision(coin));
+    eaten += numCoinsBefore - coins.length;
 }
 
 function drawCoins() {
@@ -65,6 +72,12 @@ function drawPlayer() {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, width, height);
 }
+
+function drawScore() {
+    ctx.font = textFont;
+    ctx.fillStyle = textColor;
+    ctx.fillText(`Coins: $${10*eaten}`, textX, textY);
+  }
 
 function updateState() {
     maybeMakeCoin();
@@ -88,5 +101,6 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawCoins();
+    drawScore();
     requestAnimationFrame(draw);
 }
