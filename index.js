@@ -6,7 +6,7 @@ const width = 20;
 const height = 20;
 const coinWidth = 20;
 const coinHeight = 20;
-const color = "blue";
+const heroColor = "blue";
 const delta = 5;
 const coinColor = "orange";
 const coinMakeChance = 0.01;
@@ -22,6 +22,7 @@ const gameDurationSec = 30;
 const coinSound = new Audio('coin.wav');
 const gameOverSound = new Audio('game-over.wav');
 const useCoinImage = true;
+const useHeroImage = true;
 
 let canvas, ctx;
 let coins = [];
@@ -38,20 +39,30 @@ function main() {
     canvas.height = canvasHeight;
     ctx = canvas.getContext("2d");
 
-    coinImage = new Image();
-    coinImage.onload = () => {
-        setInterval(timer, 1000);
-        draw();
-    };
-    coinImage.src = "coin.png";
-
     x = canvasWidth / 2;
     y = canvasHeight / 2;
     timeLeft = gameDurationSec;
 
     document.body.appendChild(canvas);
-    document.addEventListener('keydown', e => keys[e.keyCode] = true)
-    document.addEventListener('keyup', e => keys[e.keyCode] = false)
+    document.addEventListener('keydown', e => keys[e.keyCode] = true);
+    document.addEventListener('keyup', e => keys[e.keyCode] = false);
+
+    loadImages(() => {
+        setInterval(timer, 1000);
+        draw();
+    });
+}
+
+function loadImages(cb) {
+    let numLoading = 2;
+    const onload = () => --numLoading === 0 && cb();
+    coinImage = new Image();
+    coinImage.onload = onload;
+    coinImage.src = "coin.png";
+
+    heroImage = new Image();
+    heroImage.onload = onload;
+    heroImage.src = "hero.png";
 }
 
 function timer() {
@@ -113,9 +124,17 @@ function drawCoins() {
     }
 }
 
-function drawPlayer() {
+function drawRect(x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, width, height);
+}
+
+function drawPlayer() {
+    if (useHeroImage) {
+        ctx.drawImage(heroImage, x, y);
+    } else {
+        drawRect(x, y, heroColor)
+    }
 }
 
 function drawText() {
