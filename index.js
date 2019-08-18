@@ -21,6 +21,7 @@ const keys = {};
 const gameDurationSec = 30;
 const coinSound = new Audio('coin.wav');
 const gameOverSound = new Audio('game-over.wav');
+const useCoinImage = true;
 
 let canvas, ctx;
 let coins = [];
@@ -28,12 +29,21 @@ let x, y;
 let eaten = 0;
 let timeLeft;
 let finished = false;
+let coinImage;
+let coinImageLoaded = false;
 
 function main() {
     canvas = document.createElement("canvas");
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     ctx = canvas.getContext("2d");
+
+    coinImage = new Image();
+    coinImage.onload = () => {
+        setInterval(timer, 1000);
+        draw();
+    };
+    coinImage.src = "coin.png";
 
     x = canvasWidth / 2;
     y = canvasHeight / 2;
@@ -42,10 +52,6 @@ function main() {
     document.body.appendChild(canvas);
     document.addEventListener('keydown', e => keys[e.keyCode] = true)
     document.addEventListener('keyup', e => keys[e.keyCode] = false)
-
-    setInterval(timer, 1000);
-
-    draw();
 }
 
 function timer() {
@@ -90,13 +96,20 @@ function maybeEatCoins() {
     }
 }
 
+function drawCircle(x, y, r, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x + r, y + r, r, 0, 2 * Math.PI, false);
+    ctx.fill();
+}
+
 function drawCoins() {
-    ctx.fillStyle = coinColor;
-    const r = coinWidth / 2;
     for (let coin of coins) {
-        ctx.beginPath();
-        ctx.arc(coin.x + r, coin.y + r, r, 0, 2 * Math.PI, false);
-        ctx.fill();
+        if (useCoinImage) {
+            ctx.drawImage(coinImage, coin.x, coin.y, coinWidth, coinWidth);
+        } else {
+            drawCircle(coin.x, coin.y, coinWidth / 2, coinColor);
+        }
     }
 }
 
