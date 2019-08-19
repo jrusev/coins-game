@@ -23,6 +23,10 @@ const coinSound = new Audio('coin.wav');
 const gameOverSound = new Audio('game-over.wav');
 const useCoinImage = true;
 const useHeroImage = true;
+const imageFiles = [
+    {name: 'coin', path: 'coin.png'},
+    {name: 'hero', path: 'hero.png'}
+];
 
 let canvas, ctx;
 let coins = [];
@@ -30,8 +34,7 @@ let x, y;
 let eaten = 0;
 let timeLeft;
 let finished = false;
-let coinImage;
-let coinImageLoaded = false;
+let images;
 
 function main() {
     canvas = document.createElement("canvas");
@@ -47,22 +50,23 @@ function main() {
     document.addEventListener('keydown', e => keys[e.keyCode] = true);
     document.addEventListener('keyup', e => keys[e.keyCode] = false);
 
-    loadImages(() => {
+    images = loadImages(imageFiles, () => {
         setInterval(timer, 1000);
         draw();
     });
 }
 
-function loadImages(cb) {
-    let numLoading = 2;
-    const onload = () => --numLoading === 0 && cb();
-    coinImage = new Image();
-    coinImage.onload = onload;
-    coinImage.src = "coin.png";
-
-    heroImage = new Image();
-    heroImage.onload = onload;
-    heroImage.src = "hero.png";
+function loadImages(files, onAllLoaded) {
+    let count = files.length;
+    const onload = () => --count === 0 && onAllLoaded();
+    const images = {};
+    for (let file of files) {
+        const img = new Image();
+        img.src = file.path;
+        img.onload = onload;
+        images[file.name] = img;
+    }
+    return images;
 }
 
 function timer() {
@@ -117,7 +121,7 @@ function drawCircle(x, y, r, color) {
 function drawCoins() {
     for (let coin of coins) {
         if (useCoinImage) {
-            ctx.drawImage(coinImage, coin.x, coin.y, coinWidth, coinWidth);
+            ctx.drawImage(images.coin, coin.x, coin.y, coinWidth, coinWidth);
         } else {
             drawCircle(coin.x, coin.y, coinWidth / 2, coinColor);
         }
@@ -131,7 +135,7 @@ function drawRect(x, y, color) {
 
 function drawPlayer() {
     if (useHeroImage) {
-        ctx.drawImage(heroImage, x, y);
+        ctx.drawImage(images.hero, x, y);
     } else {
         drawRect(x, y, heroColor)
     }
