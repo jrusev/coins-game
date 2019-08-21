@@ -154,10 +154,7 @@ function gameOver() {
     gameOverSound.play();
 }
 
-function updateState() {
-    maybeMakeCoin();
-    maybeRemoveCoins();
-
+function moveHero() {
     let dx = 0;
     let dy = 0;
     if (keys[37]) { dx = -delta; }
@@ -168,6 +165,12 @@ function updateState() {
         x += dx;
         y += dy;
     }
+}
+
+function updateState() {
+    maybeMakeCoin();
+    maybeRemoveCoins();
+    moveHero();
     maybeEatCoins();
 }
 
